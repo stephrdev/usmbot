@@ -18,38 +18,38 @@ int main(void) {
 	Steering steer = Steering(&DDRB, &PORTB, PB4, PB5, PB6, PB7);
 
 
-	terminal.printLine("USMBOT READY.");
+	terminal.transmit_text("USMBOT READY.", true);
 
 	while(true) {
 		// steering module need to update stepper based on current speed
 		// and direction settings.
 		steer.step();
 
-		if (terminal.hasData()) {
-			uint8_t ctrl = terminal.receiveByte();
+		if (terminal.has_data()) {
+			uint8_t ctrl = terminal.receive_byte();
 
 			// we have speed limits. Therefore we validate the current speed.
-			if (ctrl == 'w' && steer.getSpeed() >= 10) {
-				steer.setSpeed(steer.getSpeed() - 5);
+			if (ctrl == 'w' && steer.get_speed() >= 10) {
+				steer.set_speed(steer.get_speed() - 5);
 
-				terminal.printNumber(steer.getSpeed());
-				terminal.printLine(" set as new speed.");
-			} else if (ctrl == 's' && steer.getSpeed() < 50) {
-				steer.setSpeed(steer.getSpeed() + 5);
-				terminal.printNumber(steer.getSpeed());
-				terminal.printLine(" set as new speed.");
+				terminal.transmit_number(steer.get_speed());
+				terminal.transmit_text(" set as new speed.", true);
+			} else if (ctrl == 's' && steer.get_speed() < 50) {
+				steer.set_speed(steer.get_speed() + 5);
+				terminal.transmit_number(steer.get_speed());
+				terminal.transmit_text(" set as new speed.", true);
 			}
 
 			// Handle direction changes.
 			if (ctrl == 'a') {
-				steer.setDirection(STEERING_LEFT);
-				terminal.printLine("Steering left..");
+				steer.set_direction(STEERING_LEFT);
+				terminal.transmit_text("Steering left..", true);
 			} else if (ctrl == 'd') {
-				steer.setDirection(STEERING_RIGHT);
-				terminal.printLine("Steering right..");
+				steer.set_direction(STEERING_RIGHT);
+				terminal.transmit_text("Steering right..", true);
 			} else if (ctrl == 'q') {
-				steer.setDirection(STEERING_NONE);
-				terminal.printLine("Steering stopped..");
+				steer.set_direction(STEERING_NONE);
+				terminal.transmit_text("Steering stopped..", true);
 			}
 		}
 	}

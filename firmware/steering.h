@@ -16,9 +16,9 @@ class Steering {
 			uint8_t pin3,
 			uint8_t pin4
 		);
-		void setDirection(int8_t direction);
-		uint8_t getSpeed(void);
-		void setSpeed(uint8_t speed);
+		void set_direction(int8_t direction);
+		uint8_t get_speed(void);
+		void set_speed(uint8_t speed);
 
 		void step(void);
 

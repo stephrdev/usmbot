@@ -40,7 +40,7 @@ Steering::Steering(
 	*ddr |= ((1 << pin1) | (1 << pin2) | (1 << pin3) | (1 << pin4));
 };
 
-void Steering::setDirection(int8_t new_direction) {
+void Steering::set_direction(int8_t new_direction) {
 	direction = new_direction;
 
 	if (direction == STEERING_NONE) {
@@ -53,11 +53,11 @@ void Steering::setDirection(int8_t new_direction) {
 	}
 }
 
-uint8_t Steering::getSpeed(void) {
+uint8_t Steering::get_speed(void) {
 	return speed;
 }
 
-void Steering::setSpeed(uint8_t new_speed) {
+void Steering::set_speed(uint8_t new_speed) {
 	speed = new_speed;
 }
 
