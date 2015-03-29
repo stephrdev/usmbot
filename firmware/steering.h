@@ -1,9 +1,9 @@
 #include <stdint.h>
 
 
-#define STEERING_LEFT -1
-#define STEERING_NONE 0
-#define STEERING_RIGHT 1
+const int8_t STEERING_LEFT = -1;
+const int8_t STEERING_NONE = 0;
+const int8_t STEERING_RIGHT = 1;
 
 
 class Steering {
@@ -16,6 +16,7 @@ class Steering {
 			uint8_t pin3,
 			uint8_t pin4
 		);
+		int8_t get_direction(void);
 		void set_direction(int8_t direction);
 		uint8_t get_speed(void);
 		void set_speed(uint8_t speed);

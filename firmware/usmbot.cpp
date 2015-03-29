@@ -3,6 +3,7 @@
 #include <bbq/serial.h>
 #include <bbq/time.h>
 
+#include "engine.h"
 #include "steering.h"
 
 
@@ -15,7 +16,8 @@ int main(void) {
 	Serial terminal = Serial(9600U);
 
 	// Init bot functionalities.
-	Steering steer = Steering(&DDRB, &PORTB, PB4, PB5, PB6, PB7);
+	Engine pedal = Engine(&DDRH, &PORTH, PH4, PH5, PH6);
+	Steering wheel = Steering(&DDRB, &PORTB, PB4, PB5, PB6, PB7);
 
 
 	terminal.transmit_text("USMBOT READY.", true);
@@ -23,33 +25,51 @@ int main(void) {
 	while(true) {
 		// steering module need to update stepper based on current speed
 		// and direction settings.
-		steer.step();
+		wheel.step();
 
 		if (terminal.has_data()) {
 			uint8_t ctrl = terminal.receive_byte();
 
-			// we have speed limits. Therefore we validate the current speed.
-			if (ctrl == 'w' && steer.get_speed() >= 10) {
-				steer.set_speed(steer.get_speed() - 5);
+			if (ctrl == 'w' && pedal.get_speed() < ENGINE_MAX_SPEED) {
+				pedal.set_speed(pedal.get_speed() + 1);
 
-				terminal.transmit_number(steer.get_speed());
+				terminal.transmit_number(pedal.get_speed());
 				terminal.transmit_text(" set as new speed.", true);
-			} else if (ctrl == 's' && steer.get_speed() < 50) {
-				steer.set_speed(steer.get_speed() + 5);
-				terminal.transmit_number(steer.get_speed());
+			} else if (ctrl == 's' && pedal.get_speed() > ENGINE_MIN_SPEED) {
+				pedal.set_speed(pedal.get_speed() - 1);
+				terminal.transmit_number(pedal.get_speed());
+				terminal.transmit_text(" set as new speed.", true);
+			}
+
+			// we have speed limits. Therefore we validate the current speed.
+			if (ctrl == 'q' && wheel.get_speed() >= 10) {
+				wheel.set_speed(wheel.get_speed() - 5);
+
+				terminal.transmit_number(wheel.get_speed());
+				terminal.transmit_text(" set as new speed.", true);
+			} else if (ctrl == 'e' && wheel.get_speed() < 50) {
+				wheel.set_speed(wheel.get_speed() + 5);
+				terminal.transmit_number(wheel.get_speed());
 				terminal.transmit_text(" set as new speed.", true);
 			}
 
 			// Handle direction changes.
 			if (ctrl == 'a') {
-				steer.set_direction(STEERING_LEFT);
-				terminal.transmit_text("Steering left..", true);
+				if (wheel.get_direction() == STEERING_RIGHT) {
+					wheel.set_direction(STEERING_NONE);
+					terminal.transmit_text("Steering stopped..", true);
+				} else {
+					wheel.set_direction(STEERING_LEFT);
+					terminal.transmit_text("Steering left..", true);
+				}
 			} else if (ctrl == 'd') {
-				steer.set_direction(STEERING_RIGHT);
-				terminal.transmit_text("Steering right..", true);
-			} else if (ctrl == 'q') {
-				steer.set_direction(STEERING_NONE);
-				terminal.transmit_text("Steering stopped..", true);
+				if (wheel.get_direction() == STEERING_LEFT) {
+					wheel.set_direction(STEERING_NONE);
+					terminal.transmit_text("Steering stopped..", true);
+				} else {
+					wheel.set_direction(STEERING_RIGHT);
+					terminal.transmit_text("Steering right..", true);
+				}
 			}
 		}
 	}

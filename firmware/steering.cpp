@@ -40,6 +40,10 @@ Steering::Steering(
 	*ddr |= ((1 << pin1) | (1 << pin2) | (1 << pin3) | (1 << pin4));
 };
 
+int8_t Steering::get_direction(void) {
+	return direction;
+}
+
 void Steering::set_direction(int8_t new_direction) {
 	direction = new_direction;
 
